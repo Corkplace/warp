@@ -8,10 +8,9 @@
   (:require #?(:clj [clojure.core :as core])
             [clojure.string :as string]))
 
-
 ;; state
 
-(defn default
+(defn make-state
   [source]
   {:source source :offset 0})
 
@@ -166,4 +165,8 @@
 (defn parse
   "A wrapper -parse"
   [parser source]
-  (:result (-parse parser (default source))))
+  (:result (-parse parser (make-state source))))
+
+(defn info
+  [parser source]
+  (-parse parser (make-state source)))
