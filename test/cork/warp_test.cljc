@@ -1,7 +1,7 @@
 (ns cork.warp-test
   (:require [cork.warp :as sut]
             [clojure.string :as string]
-            #?(:clj [clojure.test :as t :refer [deftest is]]
+            #?(:clj [clojure.test :as t :refer [deftest is run-tests]]
                :cljs [cljs.test :as t :include-macros true])))
 
 (deftest test-text-macher
@@ -50,3 +50,6 @@
                   [start end]))
         state (sut/info parser "name")]
     (is (= [0 4] (:result state)))))
+
+(defn -main [& args]
+  (run-tests))
