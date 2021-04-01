@@ -8,7 +8,7 @@
   (is (= "match-me" (sut/parse "match-me" "match-me")))
   (is (nil? (sut/parse  "do i match?" "no")))
   (let [{:keys [offset]}
-        (sut/-parse "012" (sut/make-state "012"))]
+        (sut/info "012" "012")]
     (is (= offset 3))))
 
 (deftest test-sequence-matcher
@@ -31,7 +31,7 @@
   (let [parser (sut/repeated "a" :to 2)]
     (is (= ["a"] (sut/parse parser "abbb")))
     (is (= ["a" "a"] (sut/parse parser "aabbb")))
-    (let [state (sut/-parse parser (sut/make-state "aaaaaabbb"))]
+    (let [state (sut/info parser "aaaaaabbb")]
       (is (= ["a" "a"] (:result state)))
       (is (= "a" (sut/slice state)))
       (is (= 2 (:offset state))))))
