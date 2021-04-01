@@ -45,7 +45,10 @@
 
 (defn tagged
   [parser tag]
-  (-> [tag parser]
-      (w/map
-       (fn [[_ result] _ _]
-         result))))
+  (w/then tag (constantly parser)))
+
+(defn enhance
+  [f & args]
+  (fn [parser]
+    (apply f parser args)))
+

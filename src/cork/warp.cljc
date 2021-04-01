@@ -44,6 +44,8 @@
   [state]
   (not (error? state)))
 
+;; parser protocol
+
 (defprotocol Parser
   (-parse [this state]))
 
@@ -63,6 +65,7 @@
          ~@body))))
 
 (defn text
+  "Given a string :target return success if it matches."
   [target]
   (impl-parse state
     (let [targetc (count target)
@@ -73,6 +76,7 @@
         :else           (put-error state (str "text: expected " target ", received " view "."))))))
 
 (defn chain
+  "Given a list of parsers, return a list of all the results."
   [& parsers]
   (impl-parse state
     (loop [results []
@@ -87,6 +91,7 @@
             (recur (conj results (:result next)) (rest parsers) next)))))))
 
 (defn alt
+  "Given a list of parser, return the result of the first one that succeeds."
   [& parsers]
   (impl-parse state
     (loop [parsers parsers]
@@ -113,8 +118,15 @@
               (put-result next results))
             (recur (conj results (:result next)) next)))))))
 
-(defn * [parser] (repeated parser))
-(defn + [parser] (repeated parser :from 1))
+(defn *
+  "Match zero or more"
+  [parser]
+  (repeated parser))
+
+(defn +
+  "Match one or more"
+  [parser]
+  (repeated parser :from 1))
 
 
 (defn lazy
@@ -123,7 +135,21 @@
     (let [parser (get-parser)]
       (-parse parser state))))
 
+(defn then
+  "Apply f onto the result of the given parser."
+  [parser get-parser]
+  (impl-parse state
+    (let [next (-parse parser state)]
+      (if (error? next)
+        (put-error state "Sigh")
+        (let [parser (get-parser next)
+              next (-parse parser next)]
+          (if (error? next)
+            (put-error state "Sigh")
+            next))))))
+
 (defn map
+  "Apply f onto the result of the given parser."
   [parser f]
   (impl-parse state
     (let [next (-parse parser state)]
@@ -167,6 +193,14 @@
   [parser source]
   (:result (-parse parser (make-state source))))
 
+(defn parse!
+  [parser source]
+  (let [state (-parse parser (make-state source))]
+    (if (error? state)
+      (throw (:error state))
+      (:result state))))
+
 (defn info
+  "Mainly used to debug the result of a parser."
   [parser source]
   (-parse parser (make-state source)))
