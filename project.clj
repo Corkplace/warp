@@ -1,4 +1,4 @@
-(defproject cork/warp "0.1.0-SNAPSHOT"
+(defproject place.cork/warp "0.1.0-SNAPSHOT"
   :description "Simple Parsing Library"
   :url "https://gitlab.com/cork.place/cork.warp"
   :license {:name    "GPL-3.0"

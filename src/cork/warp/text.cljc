@@ -11,6 +11,3 @@
 (def lower (char-of "abcdefghijklmnopqrstuvwxyz"))
 (def upper (char-of "ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
 (def letter (set/union lower upper))
-
-
-(w/parse (w/+ letter) "Alexander")

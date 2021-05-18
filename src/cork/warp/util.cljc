@@ -49,6 +49,4 @@
 
 (defn enhance
   [f & args]
-  (fn [parser]
-    (apply f parser args)))
-
+  #(apply f % args))

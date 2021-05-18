@@ -160,7 +160,7 @@
 (defn maybe
   [parser]
   (map (repeated parser :from 0 :to 1)
-       (fn [result pre post]
+       (fn [result _ _]
          (first result))))
 
 ;; interop with core datastructures.
