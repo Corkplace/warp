@@ -19,6 +19,15 @@
             :location {:start (:offset pre)
                        :end   (:offset post)}})))
 
+(defn join-nodes [parser]
+  (w/map parser
+         (fn [results _ _]
+           (reduce
+            (fn [m {:keys [op value]}]
+              (assoc m op value))
+            {}
+            results))))
+
 (defn ssecond [v] (second (second v)))
 
 (defn list-of
@@ -46,6 +55,12 @@
 (defn tagged
   [parser tag]
   (w/then tag (constantly parser)))
+
+(defn finally
+  [parser tag]
+  (w/map [parser tag]
+         (fn [result _ _]
+           (first result))))
 
 (defn enhance
   [f & args]

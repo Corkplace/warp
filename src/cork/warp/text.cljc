@@ -30,13 +30,10 @@
                  (u/node $ :method)
                  (u/token $)))
 
-(def path (-> letter
-              w/+
-              (w/map (fn [result _ _] (string/join "" result)))
-              (u/sep-by "/")
-              (w/maybe)
-              (u/tagged "/")
-              (u/node :path)
-              (u/token)))
+(defn join
+  ([parser] (join parser ""))
+  ([parser with]
+   (println "hi")
+   (w/map parser (fn [r _ _]
+                   (string/join with r)))))
 
-(w/parse [method path] "Post /asdf")
