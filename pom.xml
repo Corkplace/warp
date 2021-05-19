@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>cork</groupId>
+  <groupId>place.cork</groupId>
   <artifactId>warp</artifactId>
   <packaging>jar</packaging>
   <version>0.1.0-SNAPSHOT</version>
   <name>warp</name>
   <description>Simple Parsing Library</description>
   <url>https://gitlab.com/cork.place/cork.warp</url>
+  <licenses>
+    <license>
+      <name>GPL-3.0</name>
+      <url>https://choosealicense.com/licenses/gpl-3.0</url>
+    </license>
+  </licenses>
   <scm>
-    <tag>fc310ce390d3307eef22c5d09b5e47ba029ac67f</tag>
+    <tag>eab80ec4bdd5000e780afc9a306e9c2c7cb935a5</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
