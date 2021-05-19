@@ -9,4 +9,7 @@
   :dependencies [[org.clojure/clojure "1.10.3"]]
   :source-paths ["src"]
   :test-paths ["test"]
-  :plugins [[lein-license "1.0.0"]])
+  :deploy-repositories [["releases" :clojars]
+                        ["snapshots" :clojars]]
+  :plugins [[lein-license "1.0.0"]
+            [lein-pprint "1.3.2"]])
