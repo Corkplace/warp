@@ -1,0 +1,21 @@
+#+TITLE: Warp
+
+A parsercombinator.
+
+#+BEGIN_SRC clojure
+(require '[cork.warp :as w])
+(require '[cork.warp.text :as t])
+(require '[cork.warp.util :as u])
+
+(def method (u/token #{"GET" "POST" "PUT"}))
+(def path (-> t/letter
+              (u/sep-by "/")
+              (u/tagged "/")
+              u/token))
+
+
+(w/parse [method path] "GET /some/path") ;; -> ["GET" ["some" "path"]]
+
+
+
+#+END_SRC

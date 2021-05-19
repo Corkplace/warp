@@ -1,6 +1,8 @@
 (ns cork.warp.text
   (:require [cork.warp :as w]
-            [clojure.set :as set]))
+            [cork.warp.util :as u]
+            [clojure.set :as set]
+            [clojure.string :as string]))
 
 (defn char-of
   [text]
@@ -11,3 +13,30 @@
 (def lower (char-of "abcdefghijklmnopqrstuvwxyz"))
 (def upper (char-of "ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
 (def letter (set/union lower upper))
+
+(defn insensitive [text]
+  (-> (->> (string/split text #"")
+           (filter boolean)
+           (mapv (fn [letter]
+                   #{(string/lower-case letter)
+                     (string/upper-case letter)})))
+      (w/map (fn [result _ _]
+               (string/join "" result)))))
+
+
+(def method (as-> ["get" "put" "post" "options" "delete"] $
+                 (map insensitive $)
+                 (into #{} $)
+                 (u/node $ :method)
+                 (u/token $)))
+
+(def path (-> letter
+              w/+
+              (w/map (fn [result _ _] (string/join "" result)))
+              (u/sep-by "/")
+              (w/maybe)
+              (u/tagged "/")
+              (u/node :path)
+              (u/token)))
+
+(w/parse [method path] "Post /asdf")
