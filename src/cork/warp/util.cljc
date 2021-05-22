@@ -52,10 +52,6 @@
          (fn [[first parser last] _ _]
            parser)))
 
-(defn tagged
-  [parser tag]
-  (w/then tag (constantly parser)))
-
 (defn finally
   [parser tag]
   (w/map [parser tag]

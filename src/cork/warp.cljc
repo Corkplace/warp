@@ -1,5 +1,5 @@
 (ns cork.warp
-  (:refer-clojure :exclude [+ * map])
+  (:refer-clojure :exclude [+ * map not char])
   (:import #?(:clj [clojure.lang
                     PersistentVector
                     PersistentHashSet
@@ -21,8 +21,11 @@
      (subs source offset (core/+ offset size)))))
 
 (defn increment-offset
-  [state amount]
-  (update state :offset core/+ amount))
+  ([state] (increment-offset state 1))
+  ([state amount]
+   (update state :offset core/+ amount)))
+
+(def delim #{\. \/ \# \\})
 
 (defn put-error
   [state message]
@@ -42,7 +45,7 @@
 
 (defn result?
   [state]
-  (not (error? state)))
+  (core/not (error? state)))
 
 ;; parser protocol
 
@@ -71,9 +74,27 @@
     (let [targetc (count target)
           view    (slice state targetc)]
       (cond
-        (nil? view)     (put-error state "EOF")
+        (nil? view)     (put-error state {:parser :text
+                                          :given  :eof})
         (= target view) (increment-offset (put-result state target) targetc)
-        :else           (put-error state (str "text: expected " target ", received " view "."))))))
+        :else           (put-error state {:parser   :text
+                                          :expected target
+                                          :given    view})))))
+
+(defn eof [parser]
+  (impl-parse state
+    (let [{:keys [offset source]} state]
+      (if (>= offset (count source))
+        (put-result state :eof)
+        (put-result state {:parser :eof})))))
+
+(def one
+  (impl-parse state
+    (let [value (slice state)]
+      (if (nil? value)
+        (put-error state {:parser :match-one
+                          :given  :eof})
+        (increment-offset (put-result state value))))))
 
 (defn chain
   "Given a list of parsers, return a list of all the results."
@@ -87,20 +108,24 @@
         (let [parser (first parsers)
               next   (-parse parser next)]
           (if (error? next)
-            (put-error state "Failed to match all parsers")
+            (put-error state {:parser      :chain
+                              :failed-with (:error next)})
             (recur (conj results (:result next)) (rest parsers) next)))))))
 
 (defn alt
   "Given a list of parser, return the result of the first one that succeeds."
   [& parsers]
   (impl-parse state
-    (loop [parsers parsers]
+    (loop [parsers parsers
+           errors  []]
       (if (empty? parsers)
-        (put-error state "alt: failed to match any parsers")
+        (put-error state {:parser :alt
+                          :errors errors})
         (let [next (-parse (first parsers) state)]
           (if (result? next)
             next
-            (recur (rest parsers))))))))
+            (recur (rest parsers)
+                   (conj errors (:error next)))))))))
 
 (defn repeated
   "Match a parser from n to m times."
@@ -114,7 +139,11 @@
         (let [next (-parse parser next)]
           (if (error? next)
             (if (< (count results) from)
-              (put-error state "Didn't match minimum amount of values")
+              (put-error state (cond-> {:parser :repeated
+                                        :from from
+                                        :to to
+                                        :matched (count results)}
+                                 (error? next) (assoc :error (:error next))))
               (put-result next results))
             (recur (conj results (:result next)) next)))))))
 
@@ -128,7 +157,6 @@
   [parser]
   (repeated parser :from 1))
 
-
 (defn lazy
   [get-parser]
   (impl-parse state
@@ -141,12 +169,19 @@
   (impl-parse state
     (let [next (-parse parser state)]
       (if (error? next)
-        (put-error state "Sigh")
+        next
         (let [parser (get-parser next)
-              next (-parse parser next)]
+              next   (-parse parser next)]
           (if (error? next)
-            (put-error state "Sigh")
+            (put-error state {:parser :then
+                              :error  (:error next)})
             next))))))
+
+(info
+ (-> "alex"
+     (then (fn [state]
+             "sanchez")))
+ "alexsanchez")
 
 (defn map
   "Apply f onto the result of the given parser."
