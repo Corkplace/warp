@@ -10,3 +10,5 @@ build
 .nrepl-port
 
 target
+
+.lein-failures
