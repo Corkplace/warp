@@ -1,5 +1,6 @@
 (ns cork.warp-test
   (:require [cork.warp :as sut]
+            [cork.warp.combinators]
             [clojure.string :as string]
             #?(:clj [clojure.test :as t :refer [deftest is run-tests]]
                :cljs [cljs.test :as t :include-macros true])))

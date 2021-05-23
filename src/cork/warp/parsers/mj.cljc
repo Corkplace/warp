@@ -9,8 +9,7 @@
       special-symbols  (t/char-of "/*~_\\")
       newline          #{"\r\n" "\n"}
       escape           (-> ["\\" #{special-symbols newline}]
-                           (w/map (fn [[_ value] _ _]
-                                    value)))
+                           (w/map (fn [[_ value] _ _] value)))
       ws+              (w/+ " ")
       character        (w/alt t/letter " " ordinary-symbols escape)
       text             (t/join (w/+ character))
