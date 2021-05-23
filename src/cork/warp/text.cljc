@@ -1,6 +1,7 @@
 (ns cork.warp.text
   (:require [cork.warp :as w]
             [cork.warp.util :as u]
+            [cork.warp.combinators :as c]
             [clojure.set :as set]
             [clojure.string :as string]))
 
@@ -22,7 +23,7 @@
            (mapv (fn [letter]
                    #{(string/lower-case letter)
                      (string/upper-case letter)})))
-      (w/map (fn [result _ _]
+      (c/map (fn [result _ _]
                (string/join "" result)))))
 
 
@@ -37,9 +38,9 @@
 (defn join
   ([parser] (join parser ""))
   ([parser with]
-   (w/map parser (fn [r _ _]
+   (c/map parser (fn [r _ _]
                    (string/join with r)))))
 
-(def word (join (w/+ #{letter \- digit})))
+(def word (join (c/+ #{letter \- digit})))
 
 (def punctuation (char-of "!?,.;:"))

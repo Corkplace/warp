@@ -1,6 +1,7 @@
 (ns cork.warp-test
   (:require [cork.warp :as sut]
-            [cork.warp.combinators]
+            [cork.warp.combinators :as c]
+            [cork.warp.state :as state]
             [clojure.string :as string]
             #?(:clj [clojure.test :as t :refer [deftest is run-tests]]
                :cljs [cljs.test :as t :include-macros true])))
@@ -22,30 +23,30 @@
     (is (= ["a" "b" "c"] (sut/parse parser "abc")))))
 
 (deftest test-repeated-matcher
-  (let [parser (sut/repeated "a")]
+  (let [parser (c/repeated "a")]
     (is (= [] (sut/parse parser "bbb")))
     (is (= ["a"] (sut/parse parser "abbb")))
     (is (= ["a" "a"] (sut/parse parser "aabbb"))))
-  (let [parser (sut/repeated "a" :from 3)]
+  (let [parser (c/repeated "a" :from 3)]
     (is (= ["a" "a" "a"] (sut/parse parser "aaabbb")))
     (is (nil? (sut/parse parser "abbb"))))
-  (let [parser (sut/repeated "a" :to 2)]
+  (let [parser (c/repeated "a" :to 2)]
     (is (= ["a"] (sut/parse parser "abbb")))
     (is (= ["a" "a"] (sut/parse parser "aabbb")))
     (let [state (sut/info parser "aaaaaabbb")]
       (is (= ["a" "a"] (:result state)))
-      (is (= "a" (sut/slice state)))
+      (is (= "a" (state/slice state)))
       (is (= 2 (:offset state))))))
 
 (deftest test-map-matcher
-  (let [parser (sut/map
+  (let [parser (c/map
                 "name"
                 (fn [name _ _]
                   (string/upper-case name)))
         state (sut/info parser "name")]
     (is (= "NAME" (:result state)))
     (is (= 4 (:offset state))))
-  (let [parser (sut/map
+  (let [parser (c/map
                 "name"
                 (fn [_ {start :offset} {end :offset}]
                   [start end]))

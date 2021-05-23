@@ -2,6 +2,7 @@
   (:require
    [clojure.java.io :as io]
    [cork.warp :as w]
+   [cork.warp.combinators :as c]
    [cork.warp.text :as t]
    [cork.warp.util :as u]))
 
@@ -9,33 +10,33 @@
       special-symbols  (t/char-of "/*~_\\")
       newline          #{"\r\n" "\n"}
       escape           (-> ["\\" #{special-symbols newline}]
-                           (w/map (fn [[_ value] _ _] value)))
-      ws+              (w/+ " ")
-      character        (w/alt t/letter " " ordinary-symbols escape)
-      text             (t/join (w/+ character))
+                           (c/map (fn [[_ value] _ _] value)))
+      ws+              (c/+ " ")
+      character        (c/alt t/letter " " ordinary-symbols escape)
+      text             (t/join (c/+ character))
       modifier         (fn [node-name delim]
                          (-> [delim text delim]
-                             (w/map (fn [[_ content _] _ _]
+                             (c/map (fn [[_ content _] _ _]
                                       {:op      node-name
                                        :content content}))))
       italic           (modifier :italic "/")
       bold             (modifier :bold "*")
       underline        (modifier :underline "_")
       strikethrough    (modifier :strikethrough "~")
-      content          (w/alt italic bold underline strikethrough (w/map text
+      content          (c/alt italic bold underline strikethrough (c/map text
                                                                          (fn [result _ _]
                                                                            {:op :text :content result})))
-      header           (-> [(w/repeated "#" :from 1 :to 6) ws+ (w/* content)]
-                           (w/map (fn [[h _ content] _ _]
+      header           (-> [(c/repeated "#" :from 1 :to 6) ws+ (c/* content)]
+                           (c/map (fn [[h _ content] _ _]
                                     {:op      :header
                                      :level   (count h)
                                      :content content})))
-      paragraph        (-> (w/* content)
-                           (w/map (fn [content _ _]
+      paragraph        (-> (c/* content)
+                           (c/map (fn [content _ _]
                                     {:op      :paragraph
                                      :content content})))
-      page             (-> [(u/sep-by (w/alt header paragraph) (w/+ "\n")) w/eof]
-                           (w/map (fn [[page-content] _ _]
+      page             (-> [(u/sep-by (c/alt header paragraph) (c/+ "\n")) w/eof]
+                           (c/map (fn [[page-content] _ _]
                                     {:op      :page
                                      :content page-content})))]
   (def parser page))
