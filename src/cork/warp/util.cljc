@@ -1,6 +1,5 @@
 (ns cork.warp.util
   (:require [cork.warp :as w]
-            [cork.warp.text :refer [letter]]
             [clojure.pprint :refer [pprint]]
             [clojure.set :as set]))
 

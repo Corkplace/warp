@@ -11,7 +11,9 @@
 (def digit (char-of "0123456789"))
 
 (def lower (char-of "abcdefghijklmnopqrstuvwxyz"))
+
 (def upper (char-of "ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
+
 (def letter (set/union lower upper))
 
 (defn insensitive [text]
@@ -24,16 +26,20 @@
                (string/join "" result)))))
 
 
-(def method (as-> ["get" "put" "post" "options" "delete"] $
-                 (map insensitive $)
-                 (into #{} $)
-                 (u/node $ :method)
-                 (u/token $)))
+(comment
+ (def method
+   (as-> ["get" "put" "post" "options" "delete"] $
+     (map insensitive $)
+     (into #{} $)
+     (u/node $ :method)
+     (u/token $))))
 
 (defn join
   ([parser] (join parser ""))
   ([parser with]
-   (println "hi")
    (w/map parser (fn [r _ _]
                    (string/join with r)))))
 
+(def word (join (w/+ #{letter \- digit})))
+
+(def punctuation (char-of "!?,.;:"))

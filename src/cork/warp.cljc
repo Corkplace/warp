@@ -25,8 +25,6 @@
   ([state amount]
    (update state :offset core/+ amount)))
 
-(def delim #{\. \/ \# \\})
-
 (defn put-error
   [state message]
   (-> state
@@ -81,12 +79,19 @@
                                           :expected target
                                           :given    view})))))
 
-(defn eof [parser]
+(def eof
   (impl-parse state
     (let [{:keys [offset source]} state]
       (if (>= offset (count source))
         (put-result state :eof)
-        (put-result state {:parser :eof})))))
+        (put-error state {:parser :eof})))))
+
+(def bof
+  (impl-parse state
+    (let [{:keys [offset source]} state]
+      (if (= 0 offset)
+        (put-result state :eof)
+        (put-error state {:parser :eof})))))
 
 (def one
   (impl-parse state
@@ -176,12 +181,6 @@
             (put-error state {:parser :then
                               :error  (:error next)})
             next))))))
-
-(info
- (-> "alex"
-     (then (fn [state]
-             "sanchez")))
- "alexsanchez")
 
 (defn map
   "Apply f onto the result of the given parser."

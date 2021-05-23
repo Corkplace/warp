@@ -8,6 +8,7 @@
             :key     "gpl-3.0"}
   :dependencies [[org.clojure/clojure "1.10.3"]]
   :source-paths ["src"]
+  :resource-paths ["resources"]
   :test-paths ["test"]
   :deploy-repositories [["releases" :clojars]
                         ["snapshots" :clojars]]
