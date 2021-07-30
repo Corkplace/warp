@@ -1,5 +1,8 @@
 (ns cork.warp.state)
 
+(defprotocol Parser
+  (-parse [this state]))
+
 (defn make
   [source]
   {:source source :offset 0})

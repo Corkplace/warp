@@ -17,6 +17,11 @@
 
 (def letter (set/union lower upper))
 
+(def whitespace
+  #{\newline
+    \tab
+    \space})
+
 (defn insensitive [text]
   (-> (->> (string/split text #"")
            (filter boolean)

@@ -6,12 +6,15 @@
                     PersistentTreeSet
                     Fn]))
   (:require
-   [cork.warp :refer [impl-parse -parse Parser]]
-   [cork.warp.state :refer [increment-offset put-error put-result slice error? result?]]))
+    #?(:clj  [clojure.core :as core]
+       :cljs [cljs.core :as core])
+    [cork.warp :refer [literal]]
+    [cork.warp.macros :as m]
+    [cork.warp.state :as s :refer [-parse increment-offset put-error put-result slice error? result?]]))
 
 (def one
   "Matches any one character slice."
-  (impl-parse state
+  (m/impl-parse state
     (let [value (slice state)]
       (if (nil? value)
         (put-error state {:parser :match-one
@@ -21,14 +24,14 @@
 (defn chain
   "Given a list of parsers, return a list of all the results."
   [& parsers]
-  (impl-parse state
+  (m/impl-parse state
     (loop [results []
            parsers parsers
-           next    state]
+           next state]
       (if (empty? parsers)
         (put-result next results)
         (let [parser (first parsers)
-              next   (-parse parser next)]
+              next (-parse parser next)]
           (if (error? next)
             (put-error state {:parser      :chain
                               :failed-with (:error next)})
@@ -37,9 +40,9 @@
 (defn alt
   "Given a list of parser, return the result of the first one that succeeds."
   [& parsers]
-  (impl-parse state
+  (m/impl-parse state
     (loop [parsers parsers
-           errors  []]
+           errors []]
       (if (empty? parsers)
         (put-error state {:parser :alt
                           :errors errors})
@@ -53,19 +56,19 @@
   "Match a parser from n to m times."
   [parser & {:keys [from to]
              :or   {from 0 to 256}}]
-  (impl-parse state
+  (m/impl-parse state
     (loop [results []
-           next    state]
+           next state]
       (if (= (count results) to)
         (put-result next results)
         (let [next (-parse parser next)]
           (if (error? next)
             (if (< (count results) from)
-              (put-error state (cond-> {:parser :repeated
-                                        :from from
-                                        :to to
+              (put-error state (cond-> {:parser  :repeated
+                                        :from    from
+                                        :to      to
                                         :matched (count results)}
-                                 (error? next) (assoc :error (:error next))))
+                                       (error? next) (assoc :error (:error next))))
               (put-result next results))
             (recur (conj results (:result next)) next)))))))
 
@@ -82,19 +85,19 @@
 (defn lazy
   "Given a fn that returns a parser, uses the parser returned to parse the next state."
   [get-parser]
-  (impl-parse state
+  (m/impl-parse state
     (let [parser (get-parser)]
       (-parse parser state))))
 
 (defn then
   "Apply f onto the result of the given parser."
   [parser get-parser]
-  (impl-parse state
+  (m/impl-parse state
     (let [next (-parse parser state)]
       (if (error? next)
         next
         (let [parser (get-parser next)
-              next   (-parse parser next)]
+              next (-parse parser next)]
           (if (error? next)
             (put-error state {:parser :then
                               :error  (:error next)})
@@ -103,7 +106,7 @@
 (defn map
   "Apply f onto the result of the given parser."
   [parser f]
-  (impl-parse state
+  (m/impl-parse state
     (let [next (-parse parser state)]
       (if (error? next)
         next
@@ -115,20 +118,43 @@
        (fn [result _ _]
          (first result))))
 
-#?(:clj (extend-protocol Parser
-          Fn
-          (-parse [this state]
-            (-parse (lazy this) state))
-          PersistentVector
-          (-parse [this state]
-            (-parse (apply chain this) state))
-          PersistentHashSet
-          (-parse [this state]
-            (-parse (apply alt this) state))
-          PersistentTreeSet
-          (-parse [this state]
-            (-parse (apply alt this) state)))
-   :cljs (extend-protocol Parser
-           string
+(defn sep-by
+  [parser sep-parser]
+  (map [parser (* (map [sep-parser parser]
+                       (fn [[_ result]]
+                         result)))]
+       (fn [[first rest]]
+         (concat [first] rest))))
+
+(defn wrapped
+  [parser left right]
+  (map [left parser right]
+       (fn [[_ result _]]
+         result)))
+
+#?(:clj  (extend-protocol s/Parser
+           Fn
            (-parse [this state]
-             (-parse (text this) state))))
+             (-parse (lazy this) state))
+           PersistentVector
+           (-parse [this state]
+             (-parse (apply chain this) state))
+           PersistentHashSet
+           (-parse [this state]
+             (-parse (apply alt this) state))
+           PersistentTreeSet
+           (-parse [this state]
+             (-parse (apply alt this) state)))
+   :cljs (extend-protocol s/Parser
+            core/PersistentVector
+            (-parse [this state]
+              (-parse (apply chain this) state))
+            core/PersistentHashSet
+            (-parse [this state]
+              (-parse (apply alt this) state))
+            function
+            (-parse [this state]
+              (-parse (lazy this) state))
+            string
+            (-parse [this state]
+              (-parse (literal this) state))))
