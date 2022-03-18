@@ -23,34 +23,28 @@
     (is (= ["a" "b" "c"] (sut/parse parser "abc")))))
 
 (deftest test-repeated-matcher
-  (let [parser (c/repeated "a")]
+  (let [parser (c/repeated {} "a")]
     (is (= [] (sut/parse parser "bbb")))
     (is (= ["a"] (sut/parse parser "abbb")))
     (is (= ["a" "a"] (sut/parse parser "aabbb"))))
-  (let [parser (c/repeated "a" :from 3)]
+  (let [parser (c/repeated {:from 3} "a")]
     (is (= ["a" "a" "a"] (sut/parse parser "aaabbb")))
     (is (nil? (sut/parse parser "abbb"))))
-  (let [parser (c/repeated "a" :to 2)]
+  (let [parser (c/repeated {:to 2} "a")]
     (is (= ["a"] (sut/parse parser "abbb")))
     (is (= ["a" "a"] (sut/parse parser "aabbb")))
     (let [state (sut/info parser "aaaaaabbb")]
       (is (= ["a" "a"] (:result state)))
-      (is (= "a" (state/slice state)))
+      (is (= \a (state/peek state)))
       (is (= 2 (:offset state))))))
 
 (deftest test-map-matcher
-  (let [parser (c/map
-                "name"
-                (fn [name _ _]
-                  (string/upper-case name)))
-        state (sut/info parser "name")]
+  (let [parser (c/map (fn [name _ _] (string/upper-case name)) "name")
+        state  (sut/info parser "name")]
     (is (= "NAME" (:result state)))
     (is (= 4 (:offset state))))
-  (let [parser (c/map
-                "name"
-                (fn [_ {start :offset} {end :offset}]
-                  [start end]))
-        state (sut/info parser "name")]
+  (let [parser (c/map (fn [_ {start :offset} {end :offset}] [start end]) "name")
+        state  (sut/info parser "name")]
     (is (= [0 4] (:result state)))))
 
 (defn -main [& args]

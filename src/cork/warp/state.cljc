@@ -1,22 +1,22 @@
-(ns cork.warp.state)
+(ns cork.warp.state
+  (:refer-clojure :exclude [peek pop]))
 
 (defprotocol Parser
   (-parse [this state]))
 
 (defn make
   [source]
-  {:source source :offset 0})
+  {:source (seq source) :offset 0})
 
-(defn slice
-  ([state] (slice state 1))
-  ([{:keys [source offset]} size]
-   (when (>= (count source) (+ offset size))
-     (subs source offset (+ offset size)))))
+(defn peek
+  [state]
+  ((comp first :source) state))
 
-(defn increment-offset
-  ([state] (increment-offset state 1))
-  ([state amount]
-   (update state :offset + amount)))
+(defn pop
+  [state]
+  (-> state
+      (update :source rest)
+      (update :offset inc)))
 
 (defn put-error
   [state message]
@@ -37,3 +37,4 @@
 (defn result?
   [state]
   (not (error? state)))
+
