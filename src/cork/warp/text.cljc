@@ -7,7 +7,7 @@
 
 (defn char-of
   [text]
-  (into #{} text))
+  (c/alt (into [] (seq text))))
 
 (def digit (char-of "0123456789"))
 
@@ -15,37 +15,26 @@
 
 (def upper (char-of "ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
 
-(def letter (set/union lower upper))
+(def letter (c/alt [lower upper]))
 
 (def whitespace
-  #{\newline
-    \tab
-    \space})
+  (c/alt [\newline \tab \space \return]))
+
+(def compact
+  (partial c/map
+           (fn [result _ _]
+             (string/join "" result))))
 
 (defn insensitive [text]
-  (-> (->> (string/split text #"")
-           (filter boolean)
-           (mapv (fn [letter]
-                   #{(string/lower-case letter)
-                     (string/upper-case letter)})))
-      (c/map (fn [result _ _]
-               (string/join "" result)))))
+  (->> (seq text)
+       (mapv (fn [letter]
+               (let [l (Character/toLowerCase letter)
+                     u (Character/toUpperCase letter)]
+                 (if (= l u)
+                   letter
+                   #{l u}))))
+       (compact)))
 
-
-(comment
- (def method
-   (as-> ["get" "put" "post" "options" "delete"] $
-     (map insensitive $)
-     (into #{} $)
-     (u/node $ :method)
-     (u/token $))))
-
-(defn join
-  ([parser] (join parser ""))
-  ([parser with]
-   (c/map parser (fn [r _ _]
-                   (string/join with r)))))
-
-(def word (join (c/+ #{letter \- digit})))
+(def word (comp compact c/+ (partial c/alt [letter \- digit])))
 
 (def punctuation (char-of "!?,.;:"))
