@@ -16,15 +16,15 @@
 (defn chain
   "Given a list of parsers, return a list of all the results."
   [parsers]
-  (m/impl-parse state
+  (m/impl-parse root-state
     (loop [[parser & parsers] parsers
-           state              state
+           state              root-state
            results            []]
       (if (nil? parser)
         (s/put-result state results)
         (let [state' (s/-parse parser state)]
           (if (s/error? state')
-            (s/put-error state [:chain (:error state')])
+            (s/put-error root-state [:chain (:error state')])
             (recur parsers state' (conj results (:result state')))))))))
 
 (defn alt
