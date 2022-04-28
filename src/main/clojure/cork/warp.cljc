@@ -65,9 +65,4 @@
 #?(:clj  (extend-protocol s/Parser
            Character
            (-parse [this state]
-             (s/-parse (match this) state)))
-   :cljs (extend-protocol s/Parser
-           string
-           (-parse [this state]
-             (s/-parse (literal this) state))))
-
+             (s/-parse (match this) state))))

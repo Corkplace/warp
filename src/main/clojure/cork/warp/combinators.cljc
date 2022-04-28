@@ -8,6 +8,7 @@
   (:require
    #?(:clj  [clojure.core :as core]
       :cljs [cljs.core :as core])
+   #?(:clj [clojure.string :as str])
    [cork.warp.macros :as m]
    [cork.warp.state :as s]))
 
@@ -147,6 +148,5 @@
            function
            (-parse [this state]
              (-parse (lazy this) state))
-           string
-           (-parse [this state]
-             (-parse (literal this) state))))
+           ;; TODO: Impl string
+           ))
