@@ -8,10 +8,8 @@
   (:require
    #?(:clj  [clojure.core :as core]
       :cljs [cljs.core :as core])
-   [cork.warp :as w]
    [cork.warp.macros :as m]
-   [cork.warp.state :as s]
-   [clojure.string :as str]))
+   [cork.warp.state :as s]))
 
 (defn chain
   "Given a list of parsers, return a list of all the results."
