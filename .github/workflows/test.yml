@@ -1,0 +1,16 @@
+name: Clojure CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fetch Deps
+        run: "clojure -A:test:dev -P"
+      - name: Run Tests
+        run: "clojure -M:test-run"
