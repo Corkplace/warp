@@ -1,7 +1,7 @@
-{:paths   ["src"]
+{:paths   ["src/main/clojure" "src/main/resources"]
  :deps    {org.clojure/clojure       {:mvn/version "1.10.3"}
            org.clojure/clojurescript {:mvn/version "1.10.879"}}
- :aliases {:dev      {:extra-paths ["dev"]}
-           :test     {:extra-paths ["test"]}
-           :test-run {:extra-paths ["test"]
+ :aliases {:dev      {:extra-paths ["src/dev/clojure"  "src/dev/resources"]}
+           :test     {:extra-paths ["src/test/clojure" "src/test/resources"]}
+           :test-run {:extra-paths ["src/test/clojure" "src/test/resources"]
                       :main-opts   ["-m" "cork.warp-test"]}}}

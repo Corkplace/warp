@@ -4,7 +4,7 @@
             [cork.warp.state :as state]
             [clojure.string :as string]
             #?(:clj [clojure.test :as t :refer [deftest is run-tests]]
-               :cljs [cljs.test :as t :include-macros true])))
+               :cljs [cljs.test :as t :refer [deftest is run-tests]])))
 
 (deftest test-text-macher
   (is (= "match-me" (sut/parse "match-me" "match-me")))
@@ -47,5 +47,5 @@
         state  (sut/info parser "name")]
     (is (= [0 4] (:result state)))))
 
-(defn -main [& args]
+(defn -main [& _args]
   (run-tests))

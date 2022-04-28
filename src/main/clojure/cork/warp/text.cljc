@@ -1,8 +1,5 @@
 (ns cork.warp.text
-  (:require [cork.warp :as w]
-            [cork.warp.util :as u]
-            [cork.warp.combinators :as c]
-            [clojure.set :as set]
+  (:require [cork.warp.combinators :as c]
             [clojure.string :as string]))
 
 (defn char-of
@@ -25,11 +22,20 @@
            (fn [result _ _]
              (string/join "" result))))
 
-(defn insensitive [text]
+(defn- uppercase-character [c]
+  #?(:clj (Character/toUpperCase c)
+     :cljs (.toUpperCase c)))
+
+(defn- lowercase-character [c]
+  #?(:clj (Character/toLowerCase c)
+     :cljs (.toLowerCase c)))
+
+(defn insensitive
+  [text]
   (->> (seq text)
        (mapv (fn [letter]
-               (let [l (Character/toLowerCase letter)
-                     u (Character/toUpperCase letter)]
+               (let [l (lowercase-character letter)
+                     u (uppercase-character letter)]
                  (if (= l u)
                    letter
                    #{l u}))))
