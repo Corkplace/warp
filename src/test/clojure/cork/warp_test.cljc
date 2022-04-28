@@ -48,4 +48,4 @@
     (is (= [0 4] (:result state)))))
 
 (defn -main [& _args]
-  (run-tests))
+  (run-tests 'cork.warp-test))
