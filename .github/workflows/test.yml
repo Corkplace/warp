@@ -19,7 +19,7 @@ jobs:
       - name: Install clojure tools
         uses: DeLaGuardo/setup-clojure@5.0
         with:
-          cli: 1.11.0
+          cli: 1.10.3.1075
           bb: 0.7.8
       - name: Fetch Deps
         run: "clojure -A:test:dev -P"
