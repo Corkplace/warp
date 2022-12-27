@@ -9,6 +9,7 @@
    #?(:clj  [clojure.core :as core]
       :cljs [cljs.core :as core])
    [clojure.string :as str]
+   [cork.warp :as w]
    [cork.warp.macros :as m]
    [cork.warp.state :as s]))
 
@@ -151,6 +152,7 @@
            string
            (-parse [this state]
              (let [parser (->> this
+                               (map w/match)
                                (into [])
                                (chain)
                                (map (fn [result _ _]
