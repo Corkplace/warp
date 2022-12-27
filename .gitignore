@@ -15,3 +15,7 @@ target
 
 .clj-kondo
 .lsp
+
+/node_modules
+/out
+/.cljs_node_repl

@@ -9,7 +9,9 @@
     (let [c (s/peek state)]
       (if (nil? c)
         (s/put-error state [:one "expected [one], given [eof]"])
-        (s/put-result state c)))))
+        (-> state
+            (s/put-result c)
+            (s/pop))))))
 
 (defn match
   [t]
@@ -28,7 +30,7 @@
 (def eof
   "Matches end of source."
   (m/impl-parse state
-    (let [{:keys [offset source]} state]
+    (let [{:keys [source]} state]
       (if (empty? source)
         (s/put-result state :eof)
         (s/put-error state [:eof "missing"])))))
@@ -57,12 +59,3 @@
   "Mainly used to debug the result of a parser."
   [parser source]
   (s/-parse parser (s/make source)))
-
-;;
-;; interop with core datastructures. kinda cool.
-;;
-
-#?(:clj  (extend-protocol s/Parser
-           Character
-           (-parse [this state]
-             (s/-parse (match this) state))))

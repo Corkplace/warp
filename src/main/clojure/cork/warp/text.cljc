@@ -1,10 +1,11 @@
 (ns cork.warp.text
   (:require [cork.warp.combinators :as c]
+            [cork.warp :as w]
             [clojure.string :as string]))
 
 (defn char-of
   [text]
-  (c/alt (into [] (seq text))))
+  (c/alt (into [] (map w/match text))))
 
 (def digit (char-of "0123456789"))
 

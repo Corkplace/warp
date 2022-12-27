@@ -120,6 +120,9 @@
   (map second' (chain [left parser right])))
 
 #?(:clj  (extend-protocol s/Parser
+           Character
+           (-parse [this state]
+             (s/-parse (w/match this) state))
            String
            (-parse [this state]
              (let [parser (chain (into [] this))
@@ -151,11 +154,9 @@
              (s/-parse (lazy this) state))
            string
            (-parse [this state]
-             (let [parser (->> this
-                               (map w/match)
-                               (into [])
+             (let [parser (->> (core/map w/match this)
                                (chain)
-                               (map (fn [result _ _]
-                                      (str/join "" result))))]
-               (s/-parse parser state)))
-           ))
+                               (map
+                                (fn [result _ _]
+                                  (str/join "" result))))]
+               (s/-parse parser state)))))

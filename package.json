@@ -1,0 +1,26 @@
+{
+  "name": "cork.warp",
+  "version": "1.0.0",
+  "description": "#+BEGIN_SRC clojure (def names #{\"alex\" \"brian\" \"chris\"}) (def actions #{\"eats\" \"cooks\" \"devours\"}) (def foods #{\"ramen\" \"pizza\" \"sushi\"}) (def statment [(token names) (token actions) (token foods)]) (parse statement \"alex devourspizza\") ;; -> [\"alex\" \"devours\" \"pizza\"] #+END_SRC",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Corkplace/warp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Corkplace/warp/issues"
+  },
+  "homepage": "https://github.com/Corkplace/warp#readme",
+  "devDependencies": {
+    "ws": "^8.11.0"
+  }
+}
