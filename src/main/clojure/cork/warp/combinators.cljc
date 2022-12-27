@@ -141,12 +141,12 @@
    :cljs (extend-protocol s/Parser
            core/PersistentVector
            (-parse [this state]
-             (-parse (apply chain this) state))
+             (s/-parse (apply chain this) state))
            core/PersistentHashSet
            (-parse [this state]
-             (-parse (apply alt this) state))
+             (s/-parse (apply alt this) state))
            function
            (-parse [this state]
-             (-parse (lazy this) state))
+             (s/-parse (lazy this) state))
            ;; TODO: Impl string
            ))
