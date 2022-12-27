@@ -5,7 +5,8 @@
 
 (defn char-of
   [text]
-  (c/alt (into [] (map w/match text))))
+  {:pre [(string? text)]}
+  (c/alt (map w/match text)))
 
 (def digit (char-of "0123456789"))
 
