@@ -1,6 +1,6 @@
-(ns cork.warp.text
-  (:require [cork.warp.combinators :as c]
-            [cork.warp :as w]
+(ns violet.warp.text
+  (:require [violet.warp.combinators :as c]
+            [violet.warp :as w]
             [clojure.string :as string]))
 
 (defn char-of

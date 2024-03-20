@@ -1,6 +1,6 @@
-(ns cork.warp.text-test
-  (:require [cork.warp :as sut]
-            [cork.warp.text :as text]
+(ns violet.warp.text-test
+  (:require [violet.warp :as sut]
+            [violet.warp.text :as text]
             #?(:clj [clojure.test :as t :refer [deftest is]]
                :cljs [cljs.test :as t :refer [deftest is]])))
 

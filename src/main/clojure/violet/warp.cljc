@@ -1,8 +1,8 @@
-(ns cork.warp
+(ns violet.warp
   (:refer-clojure :exclude [+ * map not char])
   (:require
-    [cork.warp.state :as s]
-    [cork.warp.macros :as m]))
+    [violet.warp.state :as s]
+    [violet.warp.macros :as m]))
 
 (def one
   (m/impl-parse state

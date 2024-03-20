@@ -1,8 +1,8 @@
-(ns cork.warp.parser.ipv4
-  (:require [cork.warp.combinators :as c]
-            [cork.warp.state :as s]
-            [cork.warp.text :as t]
-            [cork.warp :as w]))
+(ns violet.warp.parser.ipv4
+  (:require [violet.warp.combinators :as c]
+            [violet.warp.state :as s]
+            [violet.warp.text :as t]
+            [violet.warp :as w]))
 
 (def ^:private dot \.)
 (def ^:private z5 (t/char-of "012345"))

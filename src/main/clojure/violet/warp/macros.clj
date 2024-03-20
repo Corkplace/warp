@@ -1,5 +1,5 @@
-(ns cork.warp.macros
-  (:require [cork.warp.state :as state]
+(ns violet.warp.macros
+  (:require [violet.warp.state :as state]
             [clojure.pprint :refer [pprint]]))
 
 (defn -pass-state [state body]

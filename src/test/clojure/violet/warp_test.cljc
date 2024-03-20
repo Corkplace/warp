@@ -1,5 +1,5 @@
-(ns cork.warp-test
-  (:require [cork.warp :as sut]
+(ns violet.warp-test
+  (:require [violet.warp :as sut]
             #?(:clj [clojure.test :as t :refer [deftest is run-tests]]
                :cljs [cljs.test :as t :refer [deftest is run-tests]])))
 
@@ -36,4 +36,4 @@
 ;;     (is (= ["a" "b" "c"] (sut/parse parser "abc")))))
 
 (defn -main [& _args]
-  (run-tests 'cork.warp-test))
+  (run-tests 'violet.warp-test))

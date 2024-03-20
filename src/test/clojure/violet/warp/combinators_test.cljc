@@ -1,7 +1,7 @@
-(ns cork.warp.combinators-test
-  (:require [cork.warp :as sut]
-            [cork.warp.combinators :as c]
-            [cork.warp.state :as state]
+(ns violet.warp.combinators-test
+  (:require [violet.warp :as sut]
+            [violet.warp.combinators :as c]
+            [violet.warp.state :as state]
             [clojure.string :as string]
             #?(:clj [clojure.test :as t :refer [deftest is run-tests]]
                :cljs [cljs.test :as t :refer [deftest is run-tests]])))

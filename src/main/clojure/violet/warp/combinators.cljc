@@ -1,4 +1,4 @@
-(ns cork.warp.combinators
+(ns violet.warp.combinators
   (:refer-clojure :exclude [+ * map cat])
   (:import #?(:clj [clojure.lang
                     PersistentVector
@@ -9,9 +9,9 @@
    #?(:clj  [clojure.core :as core]
       :cljs [cljs.core :as core])
    [clojure.string :as str]
-   [cork.warp :as w]
-   [cork.warp.macros :as m]
-   [cork.warp.state :as s]))
+   [violet.warp :as w]
+   [violet.warp.macros :as m]
+   [violet.warp.state :as s]))
 
 (defn chain
   "Given a list of parsers, return a list of all the results."
